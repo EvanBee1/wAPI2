@@ -1,0 +1,331 @@
+form {
+    padding: 20px;
+    border-radius: 5px;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5f5;
+    color: black;
+    margin:0px !important;
+}
+
+.container {
+    color: black;
+    width: 80%;
+    margin: 0 auto;
+}
+
+/* Header Styles */
+header {
+    background-color: black;
+    color: #fff;
+    padding: 20px 0;
+    display: flex;
+    height: 80px;
+    align-items: center;
+}
+
+header h1 {
+    color: #f5f5f5;
+    float: left;
+    font-size: 24px;
+}
+
+header nav {
+    float: right;
+}
+
+header nav ul {
+    list-style: none;
+}
+
+header nav ul li {
+    display: inline;
+    margin-left: 20px;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Hero Section Styles */
+.hero {
+    background-size: cover;
+    color: #fff;
+    text-align: center;
+    padding: 100px 0;
+}
+
+.hero h2 {
+    font-size: 75px;
+    margin-bottom: 20px;
+    font-weight: 100;
+}
+
+@import url('https://fonts.cdnfonts.com/css/lt-binary-neue');
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    font-family: 'LT Binary Neue Round', sans-serif;
+    font-style: italic;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #ff6600;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 700;
+}
+
+.btn:hover {
+    background-color: #e55e00;
+}
+
+/* Footer Styles */
+footer {
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.footer-text {
+    color: white;
+}
+
+@import url('https://fonts.cdnfonts.com/css/the-scientist');
+.welcome-title {
+    font-family: 'The Scientist', sans-serif;
+}
+
+@import url('https://fonts.cdnfonts.com/css/lt-binary-neue');
+.website-name {
+    font-family: 'LT Binary Neue', sans-serif;
+    font-size: 30px;
+    font-weight: 100;
+    letter-spacing: 5px;
+}
+
+.pokemon-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.pokemon-img {
+    max-width: 100px;
+}
+
+.wrapper {
+    padding-bottom: 90px;
+}
+
+.divider {
+    position: relative;
+    margin-top: 90px;
+    height: 1px;
+}
+
+.div-transparent:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 5%;
+    right: 5%;
+    width: 90%;
+    height: 1px;
+    background-image: linear-gradient(to right, transparent, rgb(48, 49, 51), transparent);
+}
+
+.div-arrow-down:after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: -7px;
+    left: calc(50% - 7px);
+    width: 14px;
+    height: 14px;
+    transform: rotate(45deg);
+    background-color: #f5f5f5;
+    border-bottom: 1px solid rgb(48, 49, 51);
+    border-right: 1px solid rgb(48, 49, 51);
+}
+
+.converter-api-title,
+.converter-api-amount,
+.converter-api-type,
+.converter-api-inputs,
+.converter-api-label,
+.converter-api-input,
+.converter-api-select,
+.converter-api-convert-button,
+.converter-api-result ul,
+.converter-api-result li,
+.nasa-title,
+img#apod-image {
+    font-family: 'LT Binary Neue', sans-serif;
+}
+
+.converter-api-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.converter-api-label {
+    flex: 0 0 30%;
+    margin-bottom: 10px;
+}
+
+.converter-api-input,
+.converter-api-select {
+    flex: 0 0 60%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.converter-api-convert-button {
+    flex: 1 0 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #ff6600;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.converter-api-convert-button:hover {
+    background-color: #9c3f01;
+}
+
+.login-icon {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background: white; 
+    position: absolute;
+    top: 4%;
+    right: 20px;
+}
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+    /* Style for the login popup */
+    .register-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    /* Style for the form */
+    #registerForm {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Style for form labels */
+    label {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    /* Style for error message */
+    #registermessage {
+        color: red;
+        margin-top: 10px;
+    }
+
+
+    .login-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    /* Style for the close button */
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 24px;
+        color: #999999;
+    }
+
+    /* Style for the form */
+    #loginForm {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Style for form labels */
+    label {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    /* Style for form inputs */
+    input[type="text"],
+    input[type="password"] {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    /* Style for submit button */
+    button[type="button"] {
+        padding: 10px 20px;
+        background-color: #ff6600;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    /* Style for error message */
+    #message {
+        color: red;
+        margin-top: 10px;
+    }
+
+    form {
+        text-align: center;
+    }
+
+    p.authentication-text {
+        text-align: center;
+        color:black;
+    }

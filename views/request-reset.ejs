@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Password Reset</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="website-name">- Request Password Reset -</h1>
+        </div>
+    </header>
+
+    <div class="reset-popup" id="resetPopup">
+        <div>Reset Password</div>
+        <form id="requestResetForm" method="POST">
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required><br><br>
+            <button type="submit">Request Reset</button>
+        </form>
+        <p id="message"></p>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p class="footer-text">&copy; Evan's website, All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

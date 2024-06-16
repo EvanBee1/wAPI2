@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The API</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.cdnfonts.com/css/the-scientist" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/do-futuristic" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/lt-binary-neue" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1 class="website-name">- The API -</h1>
+            <!-- <div class="login-icon" id="loginIcon">&#xf406</div> -->
+        </div>
+    </header>
+
+    <!-- <div class="login-popup" id="loginPopup" style="display:none;">
+        <div>Login</div>
+        <div class="close-button" id="closeButton">&times;</div>
+        <form id="loginForm" method="POST" action="/login">
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="username" required><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" required><br><br>
+            <div id="registerIcon" style="cursor: pointer;">Register</div>
+            <button type="submit">Login</button>
+        </form>
+        <p id="message"></p>
+    </div>
+
+    <div class="register-popup" id="registerPopup" style="display:none;">
+        <div>Register</div>
+        <div class="close-button" id="registerCloseButton">&times;</div>
+        <form id="registerForm" method="POST" action="/register">
+            <label for="registerEmail">Email:</label><br>
+            <input type="email" id="registerEmail" name="username" required><br>
+            <label for="registerPassword">Password:</label><br>
+            <input type="password" id="registerPassword" name="password" required><br><br>
+            <button type="submit">Register</button>
+        </form>
+        <p id="registerMessage"></p>
+    </div> -->
+    
+    <script>
+        document.getElementById('loginIcon').addEventListener('click', function() {
+            document.getElementById('loginPopup').style.display = 'block';
+            console.log("Opening login popup!");
+        });
+
+        document.getElementById('closeButton').addEventListener('click', function() {
+            document.getElementById('loginPopup').style.display = 'none';
+        });
+
+        document.getElementById('registerIcon').addEventListener('click', function() {
+            document.getElementById('registerPopup').style.display = 'block';
+            document.getElementById('loginPopup').style.display = 'none';
+            console.log("Opening register popup!");
+        });
+
+        document.getElementById('registerCloseButton').addEventListener('click', function() {
+            document.getElementById('registerPopup').style.display = 'none';
+        });
+    </script>
+    
+    <section class="hero">
+        <div class="container">
+            <h2 class="welcome-title">Welcome to the website</h2>
+            <p>"The amount of API existed in this website is more than you think."</p>
+            <a href="/login" class="btn">Sign Up</a>
+        </div>
+    </section>
+
+    <div class="wrapper">
+        <div class="divider div-transparent div-arrow-down"></div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p class="footer-text">&copy; Evan's website, All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
