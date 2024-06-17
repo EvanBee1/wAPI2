@@ -5,14 +5,16 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const crypto = require('crypto');
 const path = require('path');
-require('dotenv').config();
-
+let fetch;
+(async () => {
+    const { default: fetchModule } = await import('node-fetch');
+    fetch = fetchModule;
+})();
 // MongoDB connection
-const db = process.env.MONGODB_URI;
+const db = "mongodb+srv://Evan123:gVAiz75v4sWdSUNR@clusters.9vnj1il.mongodb.net/";
 
 mongoose.connect(db, {
-    connectTimeoutMS: 30000,
-    socketTimeoutMS: 45000
+    serverSelectionTimeoutMS: 10000, // Timeout after 10 seconds
 }).then(() => {
     console.log("Connected to MongoDB");
 }).catch((err) => {
@@ -127,38 +129,21 @@ app.get('/reset-password', async (req, res) => {
     res.render('reset-password', { token });
 });
 
-app.post('/reset-password', async (req, res) => {
-    const { token, password } = req.body;
-    const user = await User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } });
-    if (!user) {
-        res.send('Token is invalid or has expired');
-        return;
-    }
-    user.password = await bcrypt.hash(password, 10);
-    user.resetToken = undefined;
-    user.resetTokenExpiration = undefined;
-    await user.save();
-    res.send('Password has been reset. You can now <a href="/login">login</a> with the new password.');
-});
-
-// YouTube search route
-app.post('/search', async (req, res) => {
-    const searchTerm = req.body.searchTerm;
-    const apiKey = process.env.YOUTUBE_API_KEY;
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchTerm}&type=video&key=${apiKey}`;
-
+// Route to handle YouTube video search
+app.get('/search', async (req, res) => {
+    const { query } = req.query;
     try {
-        const fetch = (await import('node-fetch')).default; // Dynamic import
-        const response = await fetch(url);
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=AIzaSyDnJmxP8a2QFQZOJ8QTwsxLtiVfcpzkSik&type=video`);
         const data = await response.json();
-        res.render('results', { videos: data.items });
+        res.json({ items: data.items });
     } catch (error) {
         console.error('Error fetching YouTube data:', error);
-        res.status(500).send('Error fetching YouTube data');
+        res.status(500).json({ error: 'Error fetching YouTube data' });
     }
 });
 
 // Start Server
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
