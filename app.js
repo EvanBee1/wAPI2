@@ -5,14 +5,18 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const crypto = require('crypto');
 const path = require('path');
+require('dotenv').config();
 
 // MongoDB connection
-const db = "mongodb+srv://Evan123:gVAiz75v4sWdSUNR@clusters.9vnj1il.mongodb.net/";
+const db = process.env.MONGODB_URI;
 
-mongoose.connect(db).then(() => {
-    console.log("Connected to database");
-}).catch(() => {
-    console.log("Can't connect to database");
+mongoose.connect(db, {
+    connectTimeoutMS: 30000,
+    socketTimeoutMS: 45000
+}).then(() => {
+    console.log("Connected to MongoDB");
+}).catch((err) => {
+    console.error("Error connecting to MongoDB:", err.message);
 });
 
 // Define User Schema
@@ -86,7 +90,6 @@ app.post('/register', async (req, res) => {
     }
 });
 
-
 app.get('/dashboard', requireLogin, (req, res) => {
     res.send('<h1>Welcome to your dashboard</h1><a href="/logout">Logout</a>');
 });
@@ -136,6 +139,23 @@ app.post('/reset-password', async (req, res) => {
     user.resetTokenExpiration = undefined;
     await user.save();
     res.send('Password has been reset. You can now <a href="/login">login</a> with the new password.');
+});
+
+// YouTube search route
+app.post('/search', async (req, res) => {
+    const searchTerm = req.body.searchTerm;
+    const apiKey = process.env.YOUTUBE_API_KEY;
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchTerm}&type=video&key=${apiKey}`;
+
+    try {
+        const fetch = (await import('node-fetch')).default; // Dynamic import
+        const response = await fetch(url);
+        const data = await response.json();
+        res.render('results', { videos: data.items });
+    } catch (error) {
+        console.error('Error fetching YouTube data:', error);
+        res.status(500).send('Error fetching YouTube data');
+    }
 });
 
 // Start Server
