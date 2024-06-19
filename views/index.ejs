@@ -14,7 +14,12 @@
     <header>
         <div class="container">
             <h1 class="website-name">- The VideoPlayer -</h1>
-            <!-- <div class="login-icon" id="loginIcon">&#xf406</div> -->
+            <% if (user) { %>
+                <p>Welcome, <%= user.username %>!</p>
+                <a href="/logout" class="btn">Logout</a>
+            <% } else { %>
+                <a href="/login" class="btn">Login</a>
+            <% } %>
         </div>
     </header>
 
@@ -22,29 +27,29 @@
         <div class="container">
             <h2 class="welcome-title">Welcome to the website</h2>
             <p>"The amount of API existed in this website is more than you think."</p>
-            <a href="/login" class="btn">Login</a>
         </div>
         <div class="content" style="color:black">
             
             <!-- Search Form -->
             <form id="searchForm">
                 <input type="text" id="query" placeholder="Enter search keywords">
-                <button type="submit">Search</button>
+                <button class="btn" type="submit">Search</button>
+
             </form>
 
             <div class="wrapper">
                 <div class="divider div-transparent div-arrow-up"></div>
             </div>
         
-                <!-- Search Results -->
-                <div id="searchResults" class="grid-container" ></div>
-                
+            <!-- Search Results -->
+            <div id="searchResults" class="grid-container"></div>
+            
             <div class="wrapper">
                 <div class="divider div-transparent div-arrow-down"></div>
             </div>
             
             <!-- Search Results -->
-            <div id="searchResults" class="grid-container" ></div>
+            <div id="searchResults" class="grid-container"></div>
             
             <!-- YouTube Player -->
             <div id="player"></div>
@@ -56,8 +61,6 @@
         </div>
     </section>
     
-
-
     <footer>
         <div class="container">
             <p class="footer-text">&copy; Evan's website, All rights reserved.</p>

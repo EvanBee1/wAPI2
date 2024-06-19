@@ -5,11 +5,13 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const crypto = require('crypto');
 const path = require('path');
+require('dotenv').config();
 let fetch;
 (async () => {
     const { default: fetchModule } = await import('node-fetch');
     fetch = fetchModule;
 })();
+
 // MongoDB connection
 const db = "mongodb+srv://Evan123:gVAiz75v4sWdSUNR@clusters.9vnj1il.mongodb.net/";
 
@@ -50,9 +52,24 @@ const requireLogin = (req, res, next) => {
     next();
 };
 
+// Middleware to load user data from session
+const loadUser = async (req, res, next) => {
+    if (req.session.userId) {
+        const user = await User.findById(req.session.userId);
+        if (user) {
+            req.user = user;
+        }
+    }
+    next();
+};
+
 // Routes
-app.get('/', (req, res) => {
-    res.render('index');
+app.get('/', async (req, res) => {
+    let user = null;
+    if (req.session.userId) {
+        user = await User.findById(req.session.userId).exec();
+    }
+    res.render('index', { user });
 });
 
 app.get('/login', (req, res) => {
@@ -64,7 +81,8 @@ app.post('/login', async (req, res) => {
     const user = await User.findOne({ username });
     if (user && await bcrypt.compare(password, user.password)) {
         req.session.userId = user._id;
-        res.redirect('/dashboard');
+        req.session.username = user.username;
+        res.redirect('/');
     } else {
         res.redirect('/login');
     }
@@ -83,22 +101,20 @@ app.post('/register', async (req, res) => {
         res.redirect('/login');
     } catch (error) {
         if (error.code === 11000) { // Duplicate key error code
-            // Handle duplicate username error
             res.status(400).send('Username already exists. Please choose a different username.');
         } else {
-            // Handle other errors
             res.status(500).send('Internal Server Error');
         }
     }
 });
 
-app.get('/dashboard', requireLogin, (req, res) => {
-    res.send('<h1>Welcome to your dashboard</h1><a href="/logout">Logout</a>');
+app.get('/dashboard', requireLogin, loadUser, (req, res) => {
+    res.send(`<h1>Welcome to your dashboard, ${req.user.username}</h1><a href="/logout">Logout</a>`);
 });
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/login');
+    res.redirect('/');
 });
 
 app.get('/request-reset', (req, res) => {
@@ -115,7 +131,6 @@ app.post('/request-reset', async (req, res) => {
     user.resetToken = crypto.randomBytes(32).toString('hex');
     user.resetTokenExpiration = Date.now() + 3600000; // Token valid for 1 hour
     await user.save();
-    // Here you would normally send an email with the token, but we'll skip that step.
     res.send(`Password reset link: http://localhost:3000/reset-password?token=${user.resetToken}`);
 });
 
@@ -129,11 +144,25 @@ app.get('/reset-password', async (req, res) => {
     res.render('reset-password', { token });
 });
 
-// Route to handle YouTube video search
-app.get('/search', async (req, res) => {
+app.post('/reset-password', async (req, res) => {
+    const { token, password } = req.body;
+    const user = await User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } });
+    if (!user) {
+        res.send('Token is invalid or has expired');
+        return;
+    }
+    user.password = await bcrypt.hash(password, 10);
+    user.resetToken = undefined;
+    user.resetTokenExpiration = undefined;
+    await user.save();
+    res.send('Password has been reset. You can now <a href="/login">login</a> with the new password.');
+});
+
+// Search route protected by requireLogin middleware
+app.get('/search', requireLogin, loadUser, async (req, res) => {
     const { query } = req.query;
     try {
-        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=AIzaSyDnJmxP8a2QFQZOJ8QTwsxLtiVfcpzkSik&type=video`);
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=YOUR_API_KEY&type=video`);
         const data = await response.json();
         res.json({ items: data.items });
     } catch (error) {
