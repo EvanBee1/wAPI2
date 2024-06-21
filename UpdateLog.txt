@@ -14,6 +14,7 @@ ADDITION
 +history page now read the user search history from mongoDB
 +add user profile under dropdown menu
 +standardize every page's header 
++fix video history
 ===============================
 
 REMOVE
@@ -30,6 +31,7 @@ TO BE DONE
 -fix video player cannot spawn after user log in and click on one of the video
 -fix profile page
 -fix send mail to user email to reset password
+-fix video history client side
 ===============================
 
 
