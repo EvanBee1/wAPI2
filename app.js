@@ -112,7 +112,7 @@ app.get('/dashboard', requireLogin, (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/login');
+    res.redirect('/');
 });
 
 app.get('/request-reset', (req, res) => {
