@@ -90,17 +90,16 @@
             <div id="VideoHistory" class="tabcontent">
                 <h3>Video History</h3>
                 <ul id="videoHistoryList">
-                    <% videoHistory.forEach(item => { %>
-                        <li><%= item %></li>
-                    <% }) %>
+                  <% videoHistory.forEach(item => { %>
+                    <li>
+                      <div class="video-history-item">
+                        <h4><%= item.title %></h4>
+                        <p><a href="<%= item.link %>">Watch on YouTube</a></p>
+                      </div>
+                    </li>
+                  <% }) %>
                 </ul>
-            </div>
-
-            <!-- Search Form -->
-            <form id="searchForm">
-                <input type="text" id="query" placeholder="Enter search keywords">
-                <button type="submit" class="btn">Search</button>
-            </form>
+              </div>
 
             <!-- YouTube Player API Script -->
             <script src="https://www.youtube.com/iframe_api"></script>

@@ -664,3 +664,25 @@ img#apod-image {
     color: #111;
    }
    
+   .video-history-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .video-history-item h4 {
+    margin-top: 0;
+  }
+  
+  .video-history-item p {
+    margin-bottom: 0;
+  }
+  
+  .video-history-item a {
+    text-decoration: none;
+    color: #337ab7;
+  }
+  
+  .video-history-item a:hover {
+    color: #23527c;
+  }

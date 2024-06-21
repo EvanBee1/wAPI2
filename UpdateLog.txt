@@ -15,6 +15,7 @@ ADDITION
 +add user profile under dropdown menu
 +standardize every page's header 
 +fix video history
++beutified history page
 ===============================
 
 REMOVE
