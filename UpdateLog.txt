@@ -13,6 +13,7 @@ ADDITION
 +added menu in the header 
 +history page now read the user search history from mongoDB
 +add user profile under dropdown menu
++standardize every page's header 
 ===============================
 
 REMOVE
