@@ -84,6 +84,10 @@ app.get('/favorites', (req, res) => {
     res.render('favorites', { userId, username });
 });
 
+app.get('/profile', (req, res) => {
+    const { userId, username } = req.session; // Extract both userId and username from the session
+    res.render('profile', { userId, username });
+});
 
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
