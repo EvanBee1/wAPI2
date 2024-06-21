@@ -607,12 +607,13 @@ img#apod-image {
     cursor: pointer;
     padding: 14px 16px;
     transition: 0.3s;
+    border-radius: 5px;
 }
 .tab button:hover {
     background-color: #ddd;
 }
 .tab button.active {
-    background-color: #ccc;
+    background-color: #ff6600;
 }
 .tabcontent {
     display: none;
