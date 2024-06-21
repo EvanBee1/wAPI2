@@ -27,8 +27,11 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     resetToken: { type: String, default: '' },
-    resetTokenExpiration: { type: Date }
+    resetTokenExpiration: { type: Date },
+    searchHistory: { type: [String], default: [] },  // Add this line
+    videoHistory: { type: [String], default: [] }    // Add this line
 });
+
 
 const User = mongoose.model('User', userSchema);
 
@@ -50,37 +53,37 @@ const requireLogin = (req, res, next) => {
     next();
 };
 
-// Routes
-app.get('/', (req, res) => {
-    const { userId } = req.session;
-    let username = null;
-    if (userId) {
-        username = req.session.username;
-    }
-    res.render('index', { userId, username });
-});
-
+//login
 app.get('/login', (req, res) => {
     res.render('login');
 });
 
-app.get('/history', (req, res) => {
-    const { userId } = req.session;
-    let username = null;
-    if (userId) {
-        username = req.session.username;
-    }
-    res.render('history', { userId, username });
+app.get('/', (req, res) => {
+    const { userId, username } = req.session; // Extract both userId and username from the session
+    res.render('index', { userId, username });
 });
 
-app.get('/favorites', (req, res) => {
-    const { userId } = req.session;
-    let username = null;
-    if (userId) {
-        username = req.session.username;
+app.get('/history', requireLogin, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        res.render('history', { 
+            userId: req.session.userId, 
+            username: req.session.username, 
+            searchHistory: user.searchHistory, 
+            videoHistory: user.videoHistory 
+        });
+    } catch (error) {
+        console.error('Error fetching user history:', error);
+        res.status(500).send('Internal Server Error');
     }
+});
+
+
+app.get('/favorites', (req, res) => {
+    const { userId, username } = req.session; // Extract both userId and username from the session
     res.render('favorites', { userId, username });
 });
+
 
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
@@ -88,9 +91,14 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ username });
         if (user && await bcrypt.compare(password, user.password)) {
             req.session.userId = user._id;
+            req.session.username = user.username; // Save the username in the session
 
             // Fetch the logged-in user's details and render or redirect as needed
             const loggedInUser = await User.findById(user._id); // Fetch user details
+
+            // Log user details to the console
+            console.log('User logged in:', loggedInUser);
+
             // Here you can use `loggedInUser` to customize the response or render
             res.redirect('/');
         } else {
@@ -101,6 +109,7 @@ app.post('/login', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 app.get('/register', (req, res) => {
     res.render('register');
