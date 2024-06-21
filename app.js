@@ -64,6 +64,24 @@ app.get('/login', (req, res) => {
     res.render('login');
 });
 
+app.get('/history', (req, res) => {
+    const { userId } = req.session;
+    let username = null;
+    if (userId) {
+        username = req.session.username;
+    }
+    res.render('history', { userId, username });
+});
+
+app.get('/favorites', (req, res) => {
+    const { userId } = req.session;
+    let username = null;
+    if (userId) {
+        username = req.session.username;
+    }
+    res.render('favorites', { userId, username });
+});
+
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     try {

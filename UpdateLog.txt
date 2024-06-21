@@ -7,6 +7,9 @@ ADDITION
 +updated website title name
 +added history page
 +updated dropdown menu title
++favrite page
++added favorite button under dropdown menu
++updated dropdown menu for every page
 ===============================
 
 REMOVE
