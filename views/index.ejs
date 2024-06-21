@@ -14,7 +14,16 @@
     <header>
         <div class="container">
             <h1 class="website-name">- The VideoPlayer -</h1>
-            <!-- <div class="login-icon" id="loginIcon">&#xf406</div> -->
+            <div class="user-info">
+                <% if (!userId) { %>
+                    <a href="/login" class="btn">Login</a>
+                <% } else { %>
+                    <span>Welcome, <%= username %></span>
+                    <form action="/logout" method="GET">
+                        <button type="submit" class="btn">Logout</button>
+                    </form>
+                <% } %>
+            </div>
         </div>
     </header>
 

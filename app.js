@@ -52,7 +52,12 @@ const requireLogin = (req, res, next) => {
 
 // Routes
 app.get('/', (req, res) => {
-    res.render('index');
+    const { userId } = req.session;
+    let username = null;
+    if (userId) {
+        username = req.session.username;
+    }
+    res.render('index', { userId, username });
 });
 
 app.get('/login', (req, res) => {
@@ -61,12 +66,21 @@ app.get('/login', (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    if (user && await bcrypt.compare(password, user.password)) {
-        req.session.userId = user._id;
-        res.redirect('/dashboard');
-    } else {
-        res.redirect('/login');
+    try {
+        const user = await User.findOne({ username });
+        if (user && await bcrypt.compare(password, user.password)) {
+            req.session.userId = user._id;
+
+            // Fetch the logged-in user's details and render or redirect as needed
+            const loggedInUser = await User.findById(user._id); // Fetch user details
+            // Here you can use `loggedInUser` to customize the response or render
+            res.redirect('/');
+        } else {
+            res.redirect('/login');
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
