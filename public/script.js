@@ -36,7 +36,7 @@ function onPlayerStateChange(event) {
 document.getElementById('searchForm').addEventListener('submit', async function(event) {
     event.preventDefault();
     const query = document.getElementById('query').value.trim();
-    const userId = document.getElementById('userId').value; // Make sure to include userId in your HTML
+    const userId = document.getElementById('userId').value; // Ensure userId is available in your HTML
 
     if (query === '') return;
 
@@ -74,15 +74,37 @@ function displaySearchResults(results) {
             <p>${title}</p>
         `;
 
-        // Add click event to play the video
+        // Add click event to play the video and save video details
         resultItem.addEventListener('click', function() {
-            player.loadVideoById(videoId);
+            if (player && typeof player.loadVideoById === 'function') {
+                player.loadVideoById(videoId);
+                saveVideoDetails(title, `https://www.youtube.com/watch?v=${videoId}`);
+            } else {
+                console.error('YouTube Player is not ready');
+            }
         });
 
         // Append to search results container
         searchResults.appendChild(resultItem);
     });
 }
+
+async function saveVideoDetails(title, link) {
+    const userId = document.getElementById('userId').value;
+    try {
+      const response = await fetch('/save-video', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, title, link }),
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error('Error saving video details:', error);
+    }
+  }
 
 function toggleDropdown() {
     var dropdownMenu = document.getElementById("dropdownMenu");

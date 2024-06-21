@@ -28,9 +28,16 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     resetToken: { type: String, default: '' },
     resetTokenExpiration: { type: Date },
-    searchHistory: { type: [String], default: [] },  // Add this line
-    videoHistory: { type: [String], default: [] }    // Add this line
+    searchHistory: { type: [String], default: [] },
+    videoHistory: { 
+        type: [{ 
+            title: String, 
+            link: String 
+        }], 
+        default: [] 
+    }
 });
+
 
 const User = mongoose.model('User', userSchema);
 
@@ -189,6 +196,17 @@ app.post('/save-search', requireLogin, async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+app.post('/save-video', requireLogin, async (req, res) => {
+    const { userId, title, link } = req.body;
+    try {
+      await User.findByIdAndUpdate(userId, { $push: { videoHistory: { title, link } } });
+      res.status(200).json({ message: 'Video details saved successfully' });
+    } catch (error) {
+      console.error('Error saving video details:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
 // Start Server
 const PORT = process.env.PORT || 3000;
