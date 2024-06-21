@@ -72,6 +72,7 @@
             
             <!-- Search Form -->
             <form id="searchForm">
+                <input type="hidden" id="userId" value="<%= userId %>">
                 <input type="text" id="query" placeholder="Enter search keywords">
                 <button type="submit" class="btn">Search</button>
             </form>
@@ -80,15 +81,12 @@
                 <div class="divider div-transparent div-arrow-up"></div>
             </div>
         
-                <!-- Search Results -->
-                <div id="searchResults" class="grid-container" ></div>
-                
+            <!-- Search Results -->
+            <div id="searchResults" class="grid-container"></div>
+            
             <div class="wrapper">
                 <div class="divider div-transparent div-arrow-down"></div>
             </div>
-            
-            <!-- Search Results -->
-            <div id="searchResults" class="grid-container" ></div>
             
             <!-- YouTube Player -->
             <div id="player"></div>
@@ -99,8 +97,6 @@
             <script src="script.js"></script>
         </div>
     </section>
-    
-
 
     <footer>
         <div class="container">

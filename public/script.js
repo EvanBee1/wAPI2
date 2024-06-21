@@ -36,10 +36,23 @@ function onPlayerStateChange(event) {
 document.getElementById('searchForm').addEventListener('submit', async function(event) {
     event.preventDefault();
     const query = document.getElementById('query').value.trim();
+    const userId = document.getElementById('userId').value; // Make sure to include userId in your HTML
+
     if (query === '') return;
 
     // Call function to search for videos
     const results = await searchVideos(query);
+
+    // Save search query to user's search history
+    await fetch('/save-search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, query }),
+    });
+
+    // Display search results
     displaySearchResults(results);
 });
 
@@ -60,7 +73,7 @@ function displaySearchResults(results) {
             <img src="${thumbnail}" alt="${title}">
             <p>${title}</p>
         `;
-        
+
         // Add click event to play the video
         resultItem.addEventListener('click', function() {
             player.loadVideoById(videoId);

@@ -32,11 +32,11 @@ const userSchema = new mongoose.Schema({
     videoHistory: { type: [String], default: [] }    // Add this line
 });
 
-
 const User = mongoose.model('User', userSchema);
 
 // Setup Express
 const app = express();
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
 
@@ -48,18 +48,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Middleware to protect routes
 const requireLogin = (req, res, next) => {
     if (!req.session.userId) {
-        return res.redirect('/login');
+        return res.status(401).json({ error: 'Unauthorized' });
     }
     next();
 };
 
-//login
+// Routes
 app.get('/login', (req, res) => {
     res.render('login');
 });
 
 app.get('/', (req, res) => {
-    const { userId, username } = req.session; // Extract both userId and username from the session
+    const { userId, username } = req.session;
     res.render('index', { userId, username });
 });
 
@@ -78,14 +78,13 @@ app.get('/history', requireLogin, async (req, res) => {
     }
 });
 
-
 app.get('/favorites', (req, res) => {
-    const { userId, username } = req.session; // Extract both userId and username from the session
+    const { userId, username } = req.session;
     res.render('favorites', { userId, username });
 });
 
 app.get('/profile', (req, res) => {
-    const { userId, username } = req.session; // Extract both userId and username from the session
+    const { userId, username } = req.session;
     res.render('profile', { userId, username });
 });
 
@@ -95,15 +94,11 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ username });
         if (user && await bcrypt.compare(password, user.password)) {
             req.session.userId = user._id;
-            req.session.username = user.username; // Save the username in the session
+            req.session.username = user.username;
 
-            // Fetch the logged-in user's details and render or redirect as needed
-            const loggedInUser = await User.findById(user._id); // Fetch user details
-
-            // Log user details to the console
+            const loggedInUser = await User.findById(user._id);
             console.log('User logged in:', loggedInUser);
 
-            // Here you can use `loggedInUser` to customize the response or render
             res.redirect('/');
         } else {
             res.redirect('/login');
@@ -113,7 +108,6 @@ app.post('/login', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
 
 app.get('/register', (req, res) => {
     res.render('register');
@@ -127,11 +121,9 @@ app.post('/register', async (req, res) => {
         await user.save();
         res.redirect('/login');
     } catch (error) {
-        if (error.code === 11000) { // Duplicate key error code
-            // Handle duplicate username error
+        if (error.code === 11000) {
             res.status(400).send('Username already exists. Please choose a different username.');
         } else {
-            // Handle other errors
             res.status(500).send('Internal Server Error');
         }
     }
@@ -158,9 +150,8 @@ app.post('/request-reset', async (req, res) => {
         return;
     }
     user.resetToken = crypto.randomBytes(32).toString('hex');
-    user.resetTokenExpiration = Date.now() + 3600000; // Token valid for 1 hour
+    user.resetTokenExpiration = Date.now() + 3600000;
     await user.save();
-    // Here you would normally send an email with the token, but we'll skip that step.
     res.send(`Password reset link: http://localhost:3000/reset-password?token=${user.resetToken}`);
 });
 
@@ -174,7 +165,6 @@ app.get('/reset-password', async (req, res) => {
     res.render('reset-password', { token });
 });
 
-// Route to handle YouTube video search
 app.get('/search', async (req, res) => {
     const { query } = req.query;
     try {
@@ -184,6 +174,19 @@ app.get('/search', async (req, res) => {
     } catch (error) {
         console.error('Error fetching YouTube data:', error);
         res.status(500).json({ error: 'Error fetching YouTube data' });
+    }
+});
+
+// Route to save search queries to user's search history
+app.post('/save-search', requireLogin, async (req, res) => {
+    const { userId, query } = req.body;
+
+    try {
+        await User.findByIdAndUpdate(userId, { $push: { searchHistory: query } });
+        res.status(200).json({ message: 'Search query saved successfully' });
+    } catch (error) {
+        console.error('Error saving search query:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
