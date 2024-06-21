@@ -4,11 +4,15 @@ ADDITION
 +upadted dropdown menu
 +added .env
 +updated website name 
++updated website title name
++added history page
++updated dropdown menu title
 ===============================
 
 REMOVE
 ===============================
 -removed original dropdown
+-removed old website title name
 ===============================
 
 TO BE DONE
