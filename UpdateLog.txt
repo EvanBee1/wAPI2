@@ -28,10 +28,7 @@ REMOVE
 
 TO BE DONE
 ===============================
--align login and logout button accordingly
--record clicked video into history page
 -fix video player cannot spawn after user log in and click on one of the video
--fix profile page
 -fix send mail to user email to reset password
 -fix cannot get /reset-password
 ===============================
