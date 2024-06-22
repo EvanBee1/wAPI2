@@ -16,6 +16,7 @@ ADDITION
 +standardize every page's header 
 +fix video history
 +beutified history page
++fix profile page
 ===============================
 
 REMOVE

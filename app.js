@@ -90,10 +90,37 @@ app.get('/favorites', (req, res) => {
     res.render('favorites', { userId, username });
 });
 
-app.get('/profile', (req, res) => {
-    const { userId, username } = req.session;
-    res.render('profile', { userId, username });
-});
+app.get('/profile', requireLogin, async (req, res) => {
+    try {
+      const user = await User.findById(req.session.userId);
+      res.render('profile', { 
+        userId: req.session.userId, 
+        username: user.username, 
+        email: user.email 
+      });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
+  app.post('/reset-password-no-token', requireLogin, async (req, res) => {
+    try {
+      const { newPassword } = req.body;
+      if (!newPassword) {
+        return res.status(400).send('New password is required');
+      }
+  
+      const user = await User.findById(req.session.userId);
+      user.password = await bcrypt.hash(newPassword, 10);
+      await user.save();
+  
+      res.send('Password reset successfully!');
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });  
 
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;

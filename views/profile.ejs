@@ -63,26 +63,51 @@
     </div>
 </header>
 
-    <section class="hero">
-        <div class="container">
-            <h2 class="welcome-title">Profile</h2>
-            <p>"Your profile data"</p>
-        </div>
-        <div class="content" style="color:black">
-            
-            
-            <!-- Your JavaScript Code -->
-            <script src="script.js"></script>
-        </div>
-    </section>
-    
+<section class="hero">
+    <div class="container">
+        <h2 class="welcome-title">Profile</h2>
+        <p>"Your profile data"</p>
+    </div>
+    <div class="content" style="color:black">
+        <p>Username: <%= username %></p>
+        <p>Email: <%= email %></p>
+        <button class="btn" onclick="document.getElementById('resetPasswordPopup').style.display='block'">Reset Password</button>
 
-
-    <footer>
-        <div class="container">
-            <p class="footer-text">&copy; Evan's website, All rights reserved.</p>
+        <!-- Password Reset Popup -->
+        <div id="resetPasswordPopup" class="popup-form" style="display:none;">
+            <form action="/reset-password-no-token" method="post" onsubmit="return validatePassword()">
+                <div>                
+                    <label for="newPassword">New Password:</label>
+                    <input type="password" id="newPassword" name="newPassword" required>
+                </div>
+                <div>
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button class="btn" type="submit">Submit</button>
+                <button class="btn" type="button" onclick="document.getElementById('resetPasswordPopup').style.display='none'">Cancel</button>
+            </form>
         </div>
-    </footer>
+        <script>
+            function validatePassword() {
+                var newPassword = document.getElementById('newPassword').value;
+                var confirmPassword = document.getElementById('confirmPassword').value;
+                if (newPassword !== confirmPassword) {
+                    alert('Passwords do not match.');
+                    return false;
+                }
+                return true;
+            }
+        </script>
+        <script src="script.js"></script>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p class="footer-text">&copy; Evan's website, All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>
