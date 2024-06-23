@@ -56,7 +56,6 @@ document.getElementById('searchForm').addEventListener('submit', async function(
     displaySearchResults(results);
 });
 
-// Function to display search results
 function displaySearchResults(results) {
     const searchResults = document.getElementById('searchResults');
     searchResults.innerHTML = ''; // Clear previous results
@@ -72,16 +71,24 @@ function displaySearchResults(results) {
         resultItem.innerHTML = `
             <img src="${thumbnail}" alt="${title}">
             <p>${title}</p>
+            <span class="star-icon" data-video-id="${videoId}" data-title="${title}" data-link="https://www.youtube.com/watch?v=${videoId}">
+                ★
+            </span>
         `;
 
         // Add click event to play the video and save video details
-        resultItem.addEventListener('click', function() {
+        resultItem.querySelector('img').addEventListener('click', function() {
             if (player && typeof player.loadVideoById === 'function') {
                 player.loadVideoById(videoId);
                 saveVideoDetails(title, `https://www.youtube.com/watch?v=${videoId}`);
             } else {
                 console.error('YouTube Player is not ready');
             }
+        });
+
+        // Add click event to save the video as a favorite
+        resultItem.querySelector('.star-icon').addEventListener('click', async function() {
+            await favoriteVideoDetails(title, `https://www.youtube.com/watch?v=${videoId}`);
         });
 
         // Append to search results container
@@ -104,7 +111,24 @@ async function saveVideoDetails(title, link) {
     } catch (error) {
       console.error('Error saving video details:', error);
     }
-  }
+}
+
+async function favoriteVideoDetails(title, link) {
+    const userId = document.getElementById('userId').value;
+    try {
+        const response = await fetch('/favorite-video', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId, title, link }),
+        });
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error('Error favoriting video details:', error);
+    }
+}
 
 function toggleDropdown() {
     var dropdownMenu = document.getElementById("dropdownMenu");

@@ -686,3 +686,9 @@ img#apod-image {
   .video-history-item a:hover {
     color: #23527c;
   }
+
+  .star-icon {
+    cursor: pointer;
+    font-size: 20px;
+    color: gold;
+}

@@ -17,6 +17,7 @@ ADDITION
 +fix video history
 +beutified history page
 +fix profile page
++fix favorite page
 ===============================
 
 REMOVE

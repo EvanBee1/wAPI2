@@ -35,6 +35,13 @@ const userSchema = new mongoose.Schema({
             link: String 
         }], 
         default: [] 
+    },
+    favoriteVideo: { 
+        type: [{ 
+            title: String, 
+            link: String 
+        }], 
+        default: [] 
     }
 });
 
@@ -85,10 +92,26 @@ app.get('/history', requireLogin, async (req, res) => {
     }
 });
 
-app.get('/favorites', (req, res) => {
-    const { userId, username } = req.session;
-    res.render('favorites', { userId, username });
+app.get('/favorites', requireLogin, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        if (user) {
+            res.render('favorites', { 
+                userId: req.session.userId, 
+                username: req.session.username, 
+                favoriteVideos: user.favoriteVideo // Correctly pass the favorite videos
+            });
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error('Error fetching favorite videos:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
+
+
+
 
 app.get('/profile', requireLogin, async (req, res) => {
     try {
@@ -234,6 +257,17 @@ app.post('/save-video', requireLogin, async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
+  app.post('/favorite-video', requireLogin, async (req, res) => {
+    const { userId, title, link } = req.body;
+    try {
+        await User.findByIdAndUpdate(userId, { $push: { favoriteVideo: { title, link } } });
+        res.status(200).json({ message: 'Video favorited successfully' });
+    } catch (error) {
+        console.error('Error favoriting video:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 // Start Server
 const PORT = process.env.PORT || 3000;
