@@ -222,6 +222,24 @@ app.get('/reset-password', async (req, res) => {
     res.render('reset-password', { token });
 });
 
+// POST route for handling the password reset with token
+app.post('/reset-password', async (req, res) => {
+    const { token, password } = req.body;
+    const user = await User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } });
+
+    if (!user) {
+        res.status(400).send('Token is invalid or has expired');
+        return;
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    user.resetToken = undefined;
+    user.resetTokenExpiration = undefined;
+    await user.save();
+
+    res.send('Password reset successfully!');
+});
+
 app.get('/search', async (req, res) => {
     const { query } = req.query;
     try {
