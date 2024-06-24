@@ -1,0 +1,39 @@
+ADDITION
+===============================
++user instance 
++upadted dropdown menu
++added .env
++updated website name 
++updated website title name
++added history page
++updated dropdown menu title
++favrite page
++added favorite button under dropdown menu
++updated dropdown menu for every page
++added menu in the header 
++history page now read the user search history from mongoDB
++add user profile under dropdown menu
++standardize every page's header 
++fix video history
++beutified history page
++fix profile page
++fix favorite page
+===============================
+
+REMOVE
+===============================
+-removed original dropdown
+-removed old website title name
+-removed history and favorite tab from dropdown menu 
+===============================
+
+TO BE DONE
+===============================
+-fix video player cannot spawn after user log in and click on one of the video
+-fix send mail to user email to reset password
+-add a popup message indicating user need to log in to access history and favorite page, instead of 
+bringing them to a spawned page 
+===============================
+
+
+

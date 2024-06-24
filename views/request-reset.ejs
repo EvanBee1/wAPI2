@@ -1,28 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request Password Reset</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>-The VideoPlayer- Request Reset</title>
+        <link rel="stylesheet" href="/css/styles.css">
+        <link href="https://fonts.cdnfonts.com/css/the-scientist" rel="stylesheet">
+        <link href="https://fonts.cdnfonts.com/css/do-futuristic" rel="stylesheet">
+        <link href="https://fonts.cdnfonts.com/css/lt-binary-neue" rel="stylesheet">
+    </head>
 <body>
     <header>
         <div class="container">
-            <h1 class="website-name">- Request Password Reset -</h1>
+            <h1 class="website-name">- The VideoPlayer -</h1>
         </div>
     </header>
 
-    <div class="reset-popup" id="resetPopup">
-        <div>Reset Password</div>
-        <form id="requestResetForm" method="POST">
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" required><br><br>
-            <button type="submit">Request Reset</button>
-        </form>
-        <p id="message"></p>
-    </div>
-    
+    <section class="hero">
+        <div class="container">
+            <h2 class="welcome-title">Reset password</h2>
+            <p>"Reset your account password"</p>
+        </div>
+        <div class="content" style="color:black">
+            
+            <div class="reset-popup" id="resetPopup">
+                <form id="requestResetForm" method="POST">
+                    <label for="email">Email:</label><br>
+                    <input type="email" id="email" name="email" required><br><br>
+                    <button type="submit">Request Reset</button>
+                </form>
+                <p id="message"></p>
+            </div>
+            
+
+            <script src="script.js"></script>
+        </div>
+    </section>
+
+
     <footer>
         <div class="container">
             <p class="footer-text">&copy; Evan's website, All rights reserved.</p>

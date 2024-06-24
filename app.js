@@ -5,14 +5,20 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const crypto = require('crypto');
 const path = require('path');
-
+let fetch;
+(async () => {
+    const { default: fetchModule } = await import('node-fetch');
+    fetch = fetchModule;
+})();
 // MongoDB connection
 const db = "mongodb+srv://Evan123:gVAiz75v4sWdSUNR@clusters.9vnj1il.mongodb.net/";
 
-mongoose.connect(db).then(() => {
-    console.log("Connected to database");
-}).catch(() => {
-    console.log("Can't connect to database");
+mongoose.connect(db, {
+    serverSelectionTimeoutMS: 10000, // Timeout after 10 seconds
+}).then(() => {
+    console.log("Connected to MongoDB");
+}).catch((err) => {
+    console.error("Error connecting to MongoDB:", err.message);
 });
 
 // Define User Schema
@@ -21,13 +27,30 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     resetToken: { type: String, default: '' },
-    resetTokenExpiration: { type: Date }
+    resetTokenExpiration: { type: Date },
+    searchHistory: { type: [String], default: [] },
+    videoHistory: { 
+        type: [{ 
+            title: String, 
+            link: String 
+        }], 
+        default: [] 
+    },
+    favoriteVideo: { 
+        type: [{ 
+            title: String, 
+            link: String 
+        }], 
+        default: [] 
+    }
 });
+
 
 const User = mongoose.model('User', userSchema);
 
 // Setup Express
 const app = express();
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
 
@@ -39,28 +62,107 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Middleware to protect routes
 const requireLogin = (req, res, next) => {
     if (!req.session.userId) {
-        return res.redirect('/login');
+        return res.status(401).json({ error: 'Unauthorized' });
     }
     next();
 };
 
 // Routes
-app.get('/', (req, res) => {
-    res.render('index');
-});
-
 app.get('/login', (req, res) => {
     res.render('login');
 });
 
+app.get('/', (req, res) => {
+    const { userId, username } = req.session;
+    res.render('index', { userId, username });
+});
+
+app.get('/history', requireLogin, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        res.render('history', { 
+            userId: req.session.userId, 
+            username: req.session.username, 
+            searchHistory: user.searchHistory, 
+            videoHistory: user.videoHistory 
+        });
+    } catch (error) {
+        console.error('Error fetching user history:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/favorites', requireLogin, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        if (user) {
+            res.render('favorites', { 
+                userId: req.session.userId, 
+                username: req.session.username, 
+                favoriteVideos: user.favoriteVideo // Correctly pass the favorite videos
+            });
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error('Error fetching favorite videos:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+
+
+app.get('/profile', requireLogin, async (req, res) => {
+    try {
+      const user = await User.findById(req.session.userId);
+      res.render('profile', { 
+        userId: req.session.userId, 
+        username: user.username, 
+        email: user.email 
+      });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
+  app.post('/reset-password-no-token', requireLogin, async (req, res) => {
+    try {
+      const { newPassword } = req.body;
+      if (!newPassword) {
+        return res.status(400).send('New password is required');
+      }
+  
+      const user = await User.findById(req.session.userId);
+      user.password = await bcrypt.hash(newPassword, 10);
+      await user.save();
+  
+      res.send('Password reset successfully!');
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });  
+
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    if (user && await bcrypt.compare(password, user.password)) {
-        req.session.userId = user._id;
-        res.redirect('/dashboard');
-    } else {
-        res.redirect('/login');
+    try {
+        const user = await User.findOne({ username });
+        if (user && await bcrypt.compare(password, user.password)) {
+            req.session.userId = user._id;
+            req.session.username = user.username;
+
+            const loggedInUser = await User.findById(user._id);
+            console.log('User logged in:', loggedInUser);
+
+            res.redirect('/');
+        } else {
+            res.redirect('/login');
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
@@ -76,16 +178,13 @@ app.post('/register', async (req, res) => {
         await user.save();
         res.redirect('/login');
     } catch (error) {
-        if (error.code === 11000) { // Duplicate key error code
-            // Handle duplicate username error
+        if (error.code === 11000) {
             res.status(400).send('Username already exists. Please choose a different username.');
         } else {
-            // Handle other errors
             res.status(500).send('Internal Server Error');
         }
     }
 });
-
 
 app.get('/dashboard', requireLogin, (req, res) => {
     res.send('<h1>Welcome to your dashboard</h1><a href="/logout">Logout</a>');
@@ -93,7 +192,7 @@ app.get('/dashboard', requireLogin, (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/login');
+    res.redirect('/');
 });
 
 app.get('/request-reset', (req, res) => {
@@ -108,9 +207,8 @@ app.post('/request-reset', async (req, res) => {
         return;
     }
     user.resetToken = crypto.randomBytes(32).toString('hex');
-    user.resetTokenExpiration = Date.now() + 3600000; // Token valid for 1 hour
+    user.resetTokenExpiration = Date.now() + 3600000;
     await user.save();
-    // Here you would normally send an email with the token, but we'll skip that step.
     res.send(`Password reset link: http://localhost:3000/reset-password?token=${user.resetToken}`);
 });
 
@@ -124,21 +222,73 @@ app.get('/reset-password', async (req, res) => {
     res.render('reset-password', { token });
 });
 
+// POST route for handling the password reset with token
 app.post('/reset-password', async (req, res) => {
     const { token, password } = req.body;
     const user = await User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } });
+
     if (!user) {
-        res.send('Token is invalid or has expired');
+        res.status(400).send('Token is invalid or has expired');
         return;
     }
+
     user.password = await bcrypt.hash(password, 10);
     user.resetToken = undefined;
     user.resetTokenExpiration = undefined;
     await user.save();
-    res.send('Password has been reset. You can now <a href="/login">login</a> with the new password.');
+
+    res.send('Password reset successfully!');
+});
+
+app.get('/search', async (req, res) => {
+    const { query } = req.query;
+    try {
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=AIzaSyDnJmxP8a2QFQZOJ8QTwsxLtiVfcpzkSik&type=video`);
+        const data = await response.json();
+        res.json({ items: data.items });
+    } catch (error) {
+        console.error('Error fetching YouTube data:', error);
+        res.status(500).json({ error: 'Error fetching YouTube data' });
+    }
+});
+
+// Route to save search queries to user's search history
+app.post('/save-search', requireLogin, async (req, res) => {
+    const { userId, query } = req.body;
+
+    try {
+        await User.findByIdAndUpdate(userId, { $push: { searchHistory: query } });
+        res.status(200).json({ message: 'Search query saved successfully' });
+    } catch (error) {
+        console.error('Error saving search query:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.post('/save-video', requireLogin, async (req, res) => {
+    const { userId, title, link } = req.body;
+    try {
+      await User.findByIdAndUpdate(userId, { $push: { videoHistory: { title, link } } });
+      res.status(200).json({ message: 'Video details saved successfully' });
+    } catch (error) {
+      console.error('Error saving video details:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  app.post('/favorite-video', requireLogin, async (req, res) => {
+    const { userId, title, link } = req.body;
+    try {
+        await User.findByIdAndUpdate(userId, { $push: { favoriteVideo: { title, link } } });
+        res.status(200).json({ message: 'Video favorited successfully' });
+    } catch (error) {
+        console.error('Error favoriting video:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 // Start Server
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
