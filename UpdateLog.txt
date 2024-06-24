@@ -31,7 +31,8 @@ TO BE DONE
 ===============================
 -fix video player cannot spawn after user log in and click on one of the video
 -fix send mail to user email to reset password
--fix cannot get /reset-password
+-add a popup message indicating user need to log in to access history and favorite page, instead of 
+bringing them to a spawned page 
 ===============================
 
 
